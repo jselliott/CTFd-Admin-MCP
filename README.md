@@ -31,6 +31,11 @@ An MCP (Model Context Protocol) server that exposes CTFd admin operations as too
 - Create, update, and delete user and team accounts
 - Set admin vs. player roles, pre-verify accounts, hide from or ban from the scoreboard
 
+### Solutions
+- Create official write-ups / walkthroughs and attach them to challenges
+- Three visibility states: `"hidden"` (default, not shown to anyone), `"visible"` (public), or `"solved"` (shown only to players who have solved the challenge)
+- Update or delete solutions at any time
+
 ### Scoreboard & Submissions
 - Read current standings
 - Browse flag submission history, filterable by challenge or user
@@ -190,6 +195,11 @@ The agent will call `create_full_challenge` for each challenge and `publish_all_
 | `get_team` | Get a team by ID |
 | `create_team` | Create a team |
 | `delete_team` | Delete a team |
+| `list_solutions` | List solutions/write-ups, with optional filters |
+| `get_solution` | Get a single solution by ID |
+| `create_solution` | Create a solution/write-up for a challenge |
+| `update_solution` | Edit a solution's content or state |
+| `delete_solution` | Delete a solution |
 | `get_scoreboard` | Get current standings |
 | `list_submissions` | Browse flag submission history |
 | `get_configs` | Read CTFd instance configuration |

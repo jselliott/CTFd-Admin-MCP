@@ -11,7 +11,7 @@ import argparse
 import base64
 import sys
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 from mcp.server.fastmcp import FastMCP
@@ -654,6 +654,92 @@ async def list_submissions(
         params["type"] = type
     resp = await client().get(f"{API_BASE}/submissions", params=params)
     return _raise_for_status(resp).get("data", [])
+
+
+# ===========================================================================
+# SOLUTIONS (write-ups / official walkthroughs)
+# ===========================================================================
+
+
+@mcp.tool()
+async def list_solutions(
+    challenge_id: int = 0,
+    state: Literal["hidden", "visible", "solved", ""] = "",
+) -> list[dict]:
+    """List solutions (write-ups). Optionally filter by challenge_id or state.
+
+    Args:
+        challenge_id: Only return solutions for this challenge.
+        state: Filter by state — "hidden", "visible", or "solved".
+    """
+    params: dict[str, Any] = {}
+    if challenge_id:
+        params["challenge_id"] = challenge_id
+    if state:
+        params["state"] = state
+    resp = await client().get(f"{API_BASE}/solutions", params=params)
+    return _raise_for_status(resp).get("data", [])
+
+
+@mcp.tool()
+async def get_solution(solution_id: int) -> dict:
+    """Get a single solution by ID."""
+    resp = await client().get(f"{API_BASE}/solutions/{solution_id}")
+    return _raise_for_status(resp).get("data", {})
+
+
+@mcp.tool()
+async def create_solution(
+    challenge_id: int,
+    content: str,
+    state: Literal["hidden", "visible", "solved"] = "hidden",
+) -> dict:
+    """Create a solution (write-up / official walkthrough) for a challenge.
+
+    Args:
+        challenge_id: Challenge this solution belongs to.
+        content: The solution text (Markdown or plain text walkthrough).
+        state: "hidden" (default — not shown to anyone), "visible" (public),
+               or "solved" (shown only to players who have solved the challenge).
+    """
+    payload = {
+        "challenge_id": challenge_id,
+        "content": content,
+        "state": state,
+    }
+    resp = await client().post(f"{API_BASE}/solutions", json=payload)
+    return _raise_for_status(resp).get("data", {})
+
+
+@mcp.tool()
+async def update_solution(
+    solution_id: int,
+    content: str = "",
+    state: Literal["hidden", "visible", "solved", ""] = "",
+) -> dict:
+    """Update a solution's content or state.
+
+    Args:
+        solution_id: ID of the solution to update.
+        content: Replacement content (omit to leave unchanged).
+        state: "hidden", "visible", "solved", or omit to leave unchanged.
+    """
+    payload: dict[str, Any] = {}
+    if content:
+        payload["content"] = content
+    if state:
+        payload["state"] = state
+    if not payload:
+        raise ValueError("No fields provided to update")
+    resp = await client().patch(f"{API_BASE}/solutions/{solution_id}", json=payload)
+    return _raise_for_status(resp).get("data", {})
+
+
+@mcp.tool()
+async def delete_solution(solution_id: int) -> dict:
+    """Delete a solution by ID."""
+    resp = await client().delete(f"{API_BASE}/solutions/{solution_id}")
+    return _raise_for_status(resp)
 
 
 # ===========================================================================
