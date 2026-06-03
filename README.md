@@ -61,8 +61,8 @@ An MCP (Model Context Protocol) server that exposes CTFd admin operations as too
 ## Installation
 
 ```bash
-git clone https://github.com/your-org/ctfd-admin-mcp
-cd ctfd-admin-mcp
+git clone https://github.com/jselliott/CTFd-Admin-MCP.git
+cd CTFd-Admin-MCP
 pip install -r requirements.txt
 ```
 
